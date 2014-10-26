@@ -42,5 +42,17 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
         print q_split
         q_final = u"+".join(q_split)
         search_terms.append(u"query=" + q_final)
+    # Add cats to URL
+    if search_dict['pets_cat']:
+        if pets_cat != 1:
+            raise ValueError(u"pets_cat can only be None or 1")
+        else:
+            search_terms.append(u"pets_cat=1")
+    if search_dict['pets_dog']:
+        if pets_dog != 1:
+            raise ValueError(u"pets_dog can only be None or 1")
+        else:
+            search_terms.append(u"pets_dog=1")
+
     all_search_terms = u"&".join(search_terms)
     return url+all_search_terms
