@@ -173,6 +173,13 @@ def parse_source(content, encoding='utf-8'):
     return parsed
 
 
+def extract_listings(source):
+    listings = source.find_all('p', class_="row")
+    #list_ids = [l.find('data-pid').string for l in lisings]
+    return listings
+
+
+
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv == 'test':
         content, encoding = read_search_results()
@@ -180,4 +187,7 @@ if __name__ == '__main__':
         content, encoding = craigslist_apartments(minAsk=500, maxAsk=1000,
                                                   bedrooms=2)
     doc = parse_source(content, encoding)
-    print doc.prettify(encoding=encoding)
+    #print doc.prettify(encoding=encoding)
+    listings = extract_listings(doc)
+    print len(listings)
+    print listings[0].prettify()
