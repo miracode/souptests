@@ -3,6 +3,7 @@
 import requests
 from bs4 import BeautifulSoup
 import sys
+import pprint
 
 """
 Craigslist Apartment Search
@@ -150,7 +151,6 @@ def make_params(query=None, pets_cat=None, pets_dog=None,
 def fetch_url(url, params):
     resp = requests.get(url, params=params)
     if resp.ok:
-        print resp.url
         return resp.content, resp.encoding
     else:
         return resp.raise_for_status()
@@ -174,10 +174,18 @@ def parse_source(content, encoding='utf-8'):
 
 
 def extract_listings(source):
+    # location attributes not included on CL anymore
     listings = source.find_all('p', class_="row")
-    #list_ids = [l.find('data-pid').string for l in lisings]
-    return listings
-
+    extracted = []
+    for listing in listings:
+        link = listing.find('span', class_='pl').find('a')
+        this_listing = {
+            'link': link.attrs['href'],
+            'description': link.string.strip(),  # strip converts from
+                                                 # NavigableString to unicode
+        }
+        extracted.append(this_listing)
+    return extracted
 
 
 if __name__ == '__main__':
@@ -190,4 +198,4 @@ if __name__ == '__main__':
     #print doc.prettify(encoding=encoding)
     listings = extract_listings(doc)
     print len(listings)
-    print listings[0].prettify()
+    pprint.pprint(listings[0])
