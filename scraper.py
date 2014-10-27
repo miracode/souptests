@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#import requests
+#from bs4 import BeautifulSoup
+
 """ Craigslist Apartment Search
 Website https://seattle.craigslist.org/search/apa
 search field:
@@ -31,91 +36,119 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
                           minAsk=None, maxAsk=None, bedrooms=None,
                           bathrooms=None, minSqft=None, maxSqft=None,
                           housing_type=None):
-    search_dict = locals()  # create dict of local variables
-    url = u"https://seattle.craigslist.org/search/apa?"
-    search_terms = []
-    # Add query to URL
-    if query:
-        query = str(query)  # make sure it is in string format
-        q_split = query.split()
-        print q_split
-        q_final = u"+".join(q_split)
-        search_terms.append(u"query=" + q_final)
-    # Add cats to URL
-    if pets_cat:
-        if pets_cat != 1:
-            raise ValueError(u"pets_cat can only be None or 1")
-        else:
-            search_terms.append(u"pets_cat=1")
-    # Add dogs to URL
-    if pets_dog:
-        if pets_dog != 1:
-            raise ValueError(u"pets_dog can only be None or 1")
-        else:
-            search_terms.append(u"pets_dog=1")
-    # Add minAsk to URL
-    if minAsk:
+    url = u"https://seattle.craigslist.org/search/apa"
+    params = make_params(**locals())
+    body = fetch_url(url, params=params)
+
+
+def make_params(query=None, pets_cat=None, pets_dog=None,
+                minAsk=None, maxAsk=None, bedrooms=None,
+                bathrooms=None, minSqft=None, maxSqft=None,
+                housing_type=None):
+    param_dict = locals()
+    # Remove query=None if exists
+    if not query:
+        del param_dict['query']
+    # Check cats is valid, remove otherwise
+    if not pets_cat:
+        del param_dict['pets_cat']
+    elif pets_cat != 1:
+        raise ValueError(u"pets_cat can only be None or 1")
+        del param_dict['pets_cat']
+    # Check cats is valid, remove otherwise
+    if not pets_dog:
+        del param_dict['pets_dog']
+    elif pets_dog != 1:
+        raise ValueError(u"pets_dog can only be None or 1")
+        del param_dict['pets_dog']
+    # Delete minAsk to URL
+    if not minAsk:
+        del param_dict['minAsk']
+    else:
         # CL ignores decimals, try to convert to integer
         try:
-            minAsk = int(minAsk)
-            search_terms.append(u"minAsk=" + str(minAsk))
+            param_dict['minAsk'] = int(minAsk)
         except ValueError:
             print u"min asking price must be a number"
-    # Add maxAsk to URL
-    if maxAsk:
+            del param_dict['minAsk']
+    # Delete maxAsk to URL
+    if not maxAsk:
+        del param_dict['maxAsk']
+    else:
+        # CL ignores decimals, try to convert to integer
         try:
-            maxAsk = int(maxAsk)
-            search_terms.append(u"maxAsk=" + str(maxAsk))
+            param_dict['maxAsk'] = int(maxAsk)
         except ValueError:
             print u"max asking price must be a number"
-    # Add bedrooms to URL (1-8)
-    if bedrooms:
+            del param_dict['maxAsk']
+    # Delete bedrooms to URL (1-8)
+    if not bedrooms:
+        del param_dict['bedrooms']
+    else:
         try:
-            bedrooms = int(bedrooms)
-            if bedrooms >= 1 and bedrooms <= 8:
-                search_terms.append(u"bedrooms=" + str(bedrooms))
-            else:
-                raise ValueError
+            param_dict['bedrooms'] = int(bedrooms)
+            if param_dict['bedrooms'] <= 1 or param_dict['bedrooms'] >= 8:
+                print u"bedrooms must be a number from 1 to 8"
+                del param_dict['bedrooms']
         except ValueError:
             print u"bedrooms must be a number from 1 to 8"
+            del param_dict['bedrooms']
 
-    # Add bathrooms to URL (1-8)
-    if bathrooms:
+    # Delete bathrooms to URL (1-8)
+    if not bathrooms:
+        del param_dict['bathrooms']
+    else:
         try:
-            bathrooms = int(bathrooms)
-            if bathrooms >= 1 and bathrooms <= 8:
-                search_terms.append(u"bathrooms=" + str(bathrooms))
-            else:
-                raise ValueError
+            param_dict['bathrooms'] = int(bathrooms)
+            if param_dict['bathrooms'] <= 1 or param_dict['bathrooms'] >= 8:
+                print u"bathrooms must be a number from 1 to 8"
+                del param_dict['bathrooms']
         except ValueError:
             print u"bathrooms must be a number from 1 to 8"
+            del param_dict['bathrooms']
 
-    # Add minSqft to URL
-    if minSqft:
+    # Delete minSqft to URL
+    if not minSqft:
+        del param_dict['minSqft']
+    else:
         try:
-            minSqft = int(minSqft)
-            search_terms.append(u"minSqft=" + str(minSqft))
+            param_dict['minSqft'] = int(minSqft)
         except ValueError:
             print u"min square footage must be a number"
-    # Add maxSqft to URL
-    if maxSqft:
+            del param_dict['minSqft']
+    # Delete maxSqft to URL
+    if not maxSqft:
+        del param_dict['maxSqft']
+    else:
         try:
-            maxSqft = int(maxSqft)
-            search_terms.append(u"maxSqft=" + str(maxSqft))
+            param_dict['maxSqft'] = int(maxSqft)
         except ValueError:
             print u"max square footage must be a number"
-    # Add housing_type:
-    if housing_type:
+            del param_dict['maxSqft']
+    # Delete housing_type:
+    if not housing_type:
+        del param_dict['housing_type']
+    else:
         try:
-            housing_type = int(housing_type)
-            if housing_type >= 1 and housing_type <= 12:
-                search_terms.append(u"housing_type=" + str(housing_type))
-            else:
-                raise ValueError
+            param_dict['housing_type'] = int(housing_type)
+            if (param_dict['housing_type'] <= 1 or
+                    param_dict['housing_type'] >= 12):
+                print u"housing_type must be a number from 1 to 12"
+                del param_dict['housing_type']
         except ValueError:
             print u"housing_type must be a number from 1 to 12"
+            del param_dict['housing_type']
+    return param_dict
 
 
+# def fetch_url(url, params):
+#     resp = requests.get(url, params)
+#     text = resp.text
+#     status = resp.status_code
+#     ok = resp.ok  # True if no error
+#     if ok:
+#         return text
+#     else:
+#         raise IOError
+#     parsed = BeautifulSoup(text)
 
-    all_search_terms = u"&".join(search_terms)
-    return url + all_search_terms
