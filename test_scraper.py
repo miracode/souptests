@@ -103,3 +103,31 @@ class ScraperTest(unittest.TestCase):
         self.assertEquals(a_error2, u"bathrooms must be a number from 1 to 8")
         self.assertEquals(actual2, expected)
 
+    def test_minSqft(self):
+        actual = craigslist_apartments(minSqft=100)
+        expected = self.url + u"minSqft=100"
+        self.assertEquals(actual, expected)
+
+    def test_minSqft_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(minSqft="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"min square footage must be a number")
+        expected = self.url
+        self.assertEquals(actual, expected)
+
+    def test_maxSqft(self):
+        actual = craigslist_apartments(maxSqft=100)
+        expected = self.url + u"maxSqft=100"
+        self.assertEquals(actual, expected)
+
+    def test_maxSqft_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(maxSqft="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"max square footage must be a number")
+        expected = self.url
+        self.assertEquals(actual, expected)
+

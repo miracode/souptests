@@ -90,6 +90,21 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
         except ValueError:
             print u"bathrooms must be a number from 1 to 8"
 
+    # Add minSqft to URL
+    if minSqft:
+        try:
+            minSqft = int(minSqft)
+            search_terms.append(u"minSqft=" + str(minSqft))
+        except ValueError:
+            print u"min square footage must be a number"
+    # Add maxSqft to URL
+    if maxSqft:
+        try:
+            maxSqft = int(maxSqft)
+            search_terms.append(u"maxSqft=" + str(maxSqft))
+        except ValueError:
+            print u"max square footage must be a number"
+
 
     all_search_terms = u"&".join(search_terms)
     return url + all_search_terms
