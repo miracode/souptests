@@ -37,9 +37,12 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
                           minAsk=None, maxAsk=None, bedrooms=None,
                           bathrooms=None, minSqft=None, maxSqft=None,
                           housing_type=None):
+    # Clear out any None paramters.
+    # (This must be first for locals() to work)
     params = make_params(**locals())
     url = u"https://seattle.craigslist.org/search/apa"
-    return fetch_url(url, params)
+    search_content, search_encoding = fetch_url(url, params)
+    write_results(search_content)
 
 
 def make_params(query=None, pets_cat=None, pets_dog=None,
@@ -150,3 +153,8 @@ def fetch_url(url, params):
     else:
         return resp.raise_for_status()
     #parsed = BeautifulSoup(text)
+
+
+def write_results(content):
+    with open('apartments.html', 'w') as outfile:
+        outfile.write(content)
