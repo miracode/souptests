@@ -42,7 +42,7 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
     params = make_params(**locals())
     url = u"https://seattle.craigslist.org/search/apa"
     search_content, search_encoding = fetch_url(url, params)
-    write_results(search_content)
+    write_results(search_content, search_encoding)
 
 
 def make_params(query=None, pets_cat=None, pets_dog=None,
@@ -155,6 +155,13 @@ def fetch_url(url, params):
     #parsed = BeautifulSoup(text)
 
 
-def write_results(content):
+def write_results(content, encoding):
     with open('apartments.html', 'w') as outfile:
-        outfile.write(content)
+        outfile.write(content.encode(encoding))
+
+
+def read_search_results(filename):
+    infile = open(filename, 'r')
+    content = infile.read()
+    infile.close()
+    return content, 'utf-8'
