@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 #-*- coding: utf-8 -*-
-#import requests
-#from bs4 import BeautifulSoup
+import requests
+from bs4 import BeautifulSoup
 
-""" Craigslist Apartment Search
+"""
+Craigslist Apartment Search
 Website https://seattle.craigslist.org/search/apa
 search field:
 ? (starts with) (separated by &'s)
@@ -36,9 +37,9 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
                           minAsk=None, maxAsk=None, bedrooms=None,
                           bathrooms=None, minSqft=None, maxSqft=None,
                           housing_type=None):
-    url = u"https://seattle.craigslist.org/search/apa"
     params = make_params(**locals())
-    body = fetch_url(url, params=params)
+    url = u"https://seattle.craigslist.org/search/apa"
+    return fetch_url(url, params)
 
 
 def make_params(query=None, pets_cat=None, pets_dog=None,
@@ -55,7 +56,7 @@ def make_params(query=None, pets_cat=None, pets_dog=None,
     elif pets_cat != 1:
         raise ValueError(u"pets_cat can only be None or 1")
         del param_dict['pets_cat']
-    # Check cats is valid, remove otherwise
+    # Check dogs is valid, remove otherwise
     if not pets_dog:
         del param_dict['pets_dog']
     elif pets_dog != 1:
@@ -141,14 +142,11 @@ def make_params(query=None, pets_cat=None, pets_dog=None,
     return param_dict
 
 
-# def fetch_url(url, params):
-#     resp = requests.get(url, params)
-#     text = resp.text
-#     status = resp.status_code
-#     ok = resp.ok  # True if no error
-#     if ok:
-#         return text
-#     else:
-#         raise IOError
-#     parsed = BeautifulSoup(text)
-
+def fetch_url(url, params):
+    resp = requests.get(url, params=params)
+    if resp.ok:
+        print resp.url
+        return resp.content, resp.encoding
+    else:
+        return resp.raise_for_status()
+    #parsed = BeautifulSoup(text)
