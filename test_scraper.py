@@ -1,5 +1,7 @@
 import unittest
 from scraper import craigslist_apartments
+import sys
+from StringIO import StringIO
 
 
 class ScraperTest(unittest.TestCase):
@@ -37,3 +39,29 @@ class ScraperTest(unittest.TestCase):
             craigslist_apartments(pets_dog=10)
         self.assertEqual(context.exception.message,
                          u"pets_dog can only be None or 1")
+
+    def test_minAsk(self):
+        actual = craigslist_apartments(minAsk=100)
+        expected = self.url + u"minAsk=100"
+        self.assertEquals(actual, expected)
+
+    def test_minAsk_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(minAsk="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"min asking price must be a number")
+        expected = self.url
+        self.assertEquals(actual, expected)
+
+    def test_maxAsk_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(maxAsk="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"max asking price must be a number")
+        expected = self.url
+        self.assertEquals(actual, expected)
+
+
+

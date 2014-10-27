@@ -35,24 +35,42 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
     url = u"https://seattle.craigslist.org/search/apa?"
     search_terms = []
     # Add query to URL
-    if search_dict['query']:
-        query = search_dict['query']
+    if query:
         query = str(query)  # make sure it is in string format
         q_split = query.split()
         print q_split
         q_final = u"+".join(q_split)
         search_terms.append(u"query=" + q_final)
     # Add cats to URL
-    if search_dict['pets_cat']:
+    if pets_cat:
         if pets_cat != 1:
             raise ValueError(u"pets_cat can only be None or 1")
         else:
             search_terms.append(u"pets_cat=1")
-    if search_dict['pets_dog']:
+    # Add dogs to URL
+    if pets_dog:
         if pets_dog != 1:
             raise ValueError(u"pets_dog can only be None or 1")
         else:
             search_terms.append(u"pets_dog=1")
+    # Add minAsk to URL
+    if minAsk:
+        # CL ignores decimals, try to convert to integer
+        try:
+            minAsk = int(minAsk)
+            search_terms.append(u"minAsk=" + str(minAsk))
+        except ValueError:
+            print u"min asking price must be a number"
+    if maxAsk:
+        try:
+            maxAsk = int(maxAsk)
+            search_terms.append(u"maxAsk=" + str(maxAsk))
+        except ValueError:
+            print u"max asking price must be a number"
+
+
+    # maxAsk=NNN --Max price
+
 
     all_search_terms = u"&".join(search_terms)
-    return url+all_search_terms
+    return url + all_search_terms
