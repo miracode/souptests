@@ -179,10 +179,13 @@ def extract_listings(source):
     extracted = []
     for listing in listings:
         link = listing.find('span', class_='pl').find('a')
+        price_span = listing.find('span', class_='price')
         this_listing = {
             'link': link.attrs['href'],
             'description': link.string.strip(),  # strip converts from
                                                  # NavigableString to unicode
+            'price': price_span.string.strip(),
+            'size': price_span.next_sibling.strip(u' \n-/\xb2')
         }
         extracted.append(this_listing)
     return extracted
@@ -198,4 +201,4 @@ if __name__ == '__main__':
     #print doc.prettify(encoding=encoding)
     listings = extract_listings(doc)
     print len(listings)
-    pprint.pprint(listings[0])
+    pprint.pprint(listings[1])
