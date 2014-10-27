@@ -61,15 +61,34 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
             search_terms.append(u"minAsk=" + str(minAsk))
         except ValueError:
             print u"min asking price must be a number"
+    # Add maxAsk to URL
     if maxAsk:
         try:
             maxAsk = int(maxAsk)
             search_terms.append(u"maxAsk=" + str(maxAsk))
         except ValueError:
             print u"max asking price must be a number"
+    # Add bedrooms to URL (1-8)
+    if bedrooms:
+        try:
+            bedrooms = int(bedrooms)
+            if bedrooms >= 1 and bedrooms <= 8:
+                search_terms.append(u"bedrooms=" + str(bedrooms))
+            else:
+                raise ValueError
+        except ValueError:
+            print u"bedrooms must be a number from 1 to 8"
 
-
-    # maxAsk=NNN --Max price
+    # Add bathrooms to URL (1-8)
+    if bathrooms:
+        try:
+            bathrooms = int(bathrooms)
+            if bathrooms >= 1 and bathrooms <= 8:
+                search_terms.append(u"bathrooms=" + str(bathrooms))
+            else:
+                raise ValueError
+        except ValueError:
+            print u"bathrooms must be a number from 1 to 8"
 
 
     all_search_terms = u"&".join(search_terms)

@@ -63,5 +63,43 @@ class ScraperTest(unittest.TestCase):
         expected = self.url
         self.assertEquals(actual, expected)
 
+    def test_bedrooms(self):
+        actual = craigslist_apartments(bedrooms=2)
+        expected = self.url + u"bedrooms=2"
+        self.assertEquals(actual, expected)
 
+    def test_bdrm_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(bedrooms="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"bedrooms must be a number from 1 to 8")
+        expected = self.url
+        self.assertEquals(actual, expected)
+        out2 = StringIO()
+        sys.stdout = out2
+        actual2 = craigslist_apartments(bedrooms=10)
+        a_error2 = out2.getvalue().strip()
+        self.assertEquals(a_error2, u"bedrooms must be a number from 1 to 8")
+        self.assertEquals(actual2, expected)
+
+    def test_bathrooms(self):
+        actual = craigslist_apartments(bathrooms=2)
+        expected = self.url + u"bathrooms=2"
+        self.assertEquals(actual, expected)
+
+    def test_bath_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(bathrooms="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"bathrooms must be a number from 1 to 8")
+        expected = self.url
+        self.assertEquals(actual, expected)
+        out2 = StringIO()
+        sys.stdout = out2
+        actual2 = craigslist_apartments(bathrooms=10)
+        a_error2 = out2.getvalue().strip()
+        self.assertEquals(a_error2, u"bathrooms must be a number from 1 to 8")
+        self.assertEquals(actual2, expected)
 
