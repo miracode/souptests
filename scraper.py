@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 """
 Craigslist Apartment Search
@@ -43,6 +44,7 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
     url = u"https://seattle.craigslist.org/search/apa"
     search_content, search_encoding = fetch_url(url, params)
     write_results(search_content, search_encoding)
+    return search_content, search_encoding
 
 
 def make_params(query=None, pets_cat=None, pets_dog=None,
@@ -152,16 +154,30 @@ def fetch_url(url, params):
         return resp.content, resp.encoding
     else:
         return resp.raise_for_status()
-    #parsed = BeautifulSoup(text)
 
 
 def write_results(content, encoding):
     with open('apartments.html', 'w') as outfile:
-        outfile.write(content.encode(encoding))
+        outfile.write(content)
 
 
-def read_search_results(filename):
+def read_search_results(filename='apartments.html'):
     infile = open(filename, 'r')
     content = infile.read()
     infile.close()
     return content, 'utf-8'
+
+
+def parse_source(content, encoding='utf-8'):
+    parsed = BeautifulSoup(content, from_encoding=encoding)
+    return parsed
+
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1 and sys.argv == 'test':
+        content, encoding = read_search_results()
+    else:
+        content, encoding = craigslist_apartments(minAsk=500, maxAsk=1000,
+                                                  bedrooms=2)
+    doc = parse_source(content, encoding)
+    print doc.prettify(encoding=encoding)
