@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 import pprint
+import json
 
 """
 Craigslist Apartment Search
@@ -176,7 +177,6 @@ def parse_source(content, encoding='utf-8'):
 def extract_listings(source):
     # location attributes not included on CL anymore
     listings = source.find_all('p', class_="row")
-    extracted = []
     for listing in listings:
         link = listing.find('span', class_='pl').find('a')
         price_span = listing.find('span', class_='price')
@@ -187,8 +187,13 @@ def extract_listings(source):
             'price': price_span.string.strip(),
             'size': price_span.next_sibling.strip(u' \n-/\xb2')
         }
-        extracted.append(this_listing)
-    return extracted
+        yield this_listing
+
+
+#no lat/long data, skipping this stepdef add_address(listing):
+#def add_address(listing):
+#    api_url = 'http://maps.googleapis.com/maps/api/geocode/json'
+#    loc = listing['location']
 
 
 if __name__ == '__main__':
