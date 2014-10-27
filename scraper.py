@@ -11,7 +11,7 @@ bedrooms=N (1-8)
 bathrooms=N (1-8)
 minSqft=NNN
 maxSqft=NNN
-sale_date=YYYY-MM-DD
+sale_date=YYYY-MM-DD -- Not including
 housing_type=N  1 - apartment
                 2 - condo)
                 3 - cottage/cabin
@@ -30,7 +30,7 @@ housing_type=N  1 - apartment
 def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
                           minAsk=None, maxAsk=None, bedrooms=None,
                           bathrooms=None, minSqft=None, maxSqft=None,
-                          sale_date=None, housing_type=None):
+                          housing_type=None):
     search_dict = locals()  # create dict of local variables
     url = u"https://seattle.craigslist.org/search/apa?"
     search_terms = []
@@ -104,6 +104,17 @@ def craigslist_apartments(query=None, pets_cat=None, pets_dog=None,
             search_terms.append(u"maxSqft=" + str(maxSqft))
         except ValueError:
             print u"max square footage must be a number"
+    # Add housing_type:
+    if housing_type:
+        try:
+            housing_type = int(housing_type)
+            if housing_type >= 1 and housing_type <= 12:
+                search_terms.append(u"housing_type=" + str(housing_type))
+            else:
+                raise ValueError
+        except ValueError:
+            print u"housing_type must be a number from 1 to 12"
+
 
 
     all_search_terms = u"&".join(search_terms)

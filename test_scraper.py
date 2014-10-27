@@ -131,3 +131,30 @@ class ScraperTest(unittest.TestCase):
         expected = self.url
         self.assertEquals(actual, expected)
 
+    def test_housing(self):
+        actual = craigslist_apartments(housing_type=2)
+        expected = self.url + u"housing_type=2"
+        self.assertEquals(actual, expected)
+
+    def test_housing_error(self):
+        out = StringIO()
+        sys.stdout = out
+        actual = craigslist_apartments(housing_type="foo")
+        a_error = out.getvalue().strip()
+        self.assertEquals(a_error, u"housing_type must be a number from 1 to \
+12")
+        expected = self.url
+        self.assertEquals(actual, expected)
+        out2 = StringIO()
+        sys.stdout = out2
+        actual2 = craigslist_apartments(housing_type=15)
+        a_error2 = out2.getvalue().strip()
+        self.assertEquals(a_error2, u"housing_type must be a number from 1 to \
+12")
+        self.assertEquals(actual2, expected)
+
+    def test_many_urls(self):
+        actual = craigslist_apartments(query="back porch", maxAsk=1500,
+                                       minSqft=500)
+        expected = self.url + u"query=back+porch&maxAsk=1500&minSqft=500"
+        self.assertEquals(actual, expected)
