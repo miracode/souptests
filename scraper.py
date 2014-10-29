@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import sys
 import pprint
+import json
 
 """
 Craigslist Apartment Search
@@ -176,7 +177,6 @@ def parse_source(content, encoding='utf-8'):
 def extract_listings(source):
     # location attributes not included on CL anymore
     listings = source.find_all('p', class_="row")
-    extracted = []
     for listing in listings:
         link = listing.find('span', class_='pl').find('a')
         price_span = listing.find('span', class_='price')
@@ -185,10 +185,28 @@ def extract_listings(source):
             'description': link.string.strip(),  # strip converts from
                                                  # NavigableString to unicode
             'price': price_span.string.strip(),
-            'size': price_span.next_sibling.strip(u' \n-/\xb2')
+            'size': price_span.next_sibling.strip(u' \n-/\xb2'),
+            # Hard coding to test functionality since not on CL site anymore
+            'location': {'data-latitude': u'47.6235481',
+                         'data-longitude': u'-122.336212'}
         }
-        extracted.append(this_listing)
-    return extracted
+        yield this_listing
+
+
+def add_address(listing):
+    api_url = 'http://maps.googleapis.com/maps/api/geocode/json'
+    loc = listing['location']
+    latlng_tmp1 = "{data-latitude},{data-longitude}"
+    parameters = {'sensor': 'false', 'latlng': latlng_tmp1.format(**loc)}
+    resp = requests.get(api_url, params=parameters)
+    resp.raise_for_status()
+    data = json.loads(resp.text)
+    if data['status'] == 'OK':
+        best = data['results'][0]
+        listing['address'] = best['formatted_address']
+    else:
+        listing['address'] = 'unavailable'
+    return listing
 
 
 if __name__ == '__main__':
@@ -198,7 +216,10 @@ if __name__ == '__main__':
         content, encoding = craigslist_apartments(minAsk=500, maxAsk=1000,
                                                   bedrooms=2)
     doc = parse_source(content, encoding)
+    for listing in extract_listings(doc):
+        listing = add_address(listing)
+        pprint.pprint(listing)
     #print doc.prettify(encoding=encoding)
-    listings = extract_listings(doc)
-    print len(listings)
-    pprint.pprint(listings[1])
+    #listings = extract_listings(doc)
+    #print len(listings)
+    #pprint.pprint(listings[1])

@@ -2,6 +2,7 @@ import unittest
 import scraper
 import sys
 from StringIO import StringIO
+import pytest
 
 
 class ScraperTest(unittest.TestCase):
