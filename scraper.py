@@ -48,10 +48,8 @@ def make_params(**kwargs):
     """Clean up the parameters, print errors if they exists"""
     if 'pets_cat' in kwargs and kwargs['pets_cat'] != 1:
         raise ValueError(u"pets_cat can only be 0 or 1")
-        del kwargs['pets_cat']
     if 'pets_dog' in kwargs and kwargs['pets_dog'] != 1:
         raise ValueError(u"pets_dog can only be 0 or 1")
-        del kwargs['pets_cat']
     if 'minAsk' in kwargs:
         # CL ignores decimals, try to convert to integer
         try:
@@ -73,8 +71,6 @@ def make_params(**kwargs):
                 raise ValueError
         except ValueError:
             print u"bedrooms must be a number from 1 to 8"
-            del kwargs['bedrooms']
-
     if 'bathrooms' in kwargs:
         try:
             kwargs['bathrooms'] = int(kwargs['bathrooms'])
@@ -82,20 +78,16 @@ def make_params(**kwargs):
                 raise ValueError
         except ValueError:
             print u"bathrooms must be a number from 1 to 8"
-            del kwargs['bathrooms']
-
     if 'minSqft' in kwargs:
         try:
             kwargs['minSqft'] = int(kwargs['minSqft'])
         except ValueError:
             print u"min square footage must be a number"
-            del kwargs['minSqft']
     if 'maxSqft' in kwargs:
         try:
             kwargs['maxSqft'] = int(kwargs['maxSqft'])
         except ValueError:
             print u"max square footage must be a number"
-            del kwargs['maxSqft']
     if 'housing_type' in kwargs:
         try:
             kwargs['housing_type'] = int(kwargs['housing_type'])
@@ -103,7 +95,6 @@ def make_params(**kwargs):
                 raise ValueError
         except ValueError:
             print u"housing_type must be a number from 1 to 12"
-            del kwargs['housing_type']
     return kwargs
 
 
