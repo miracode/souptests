@@ -1,4 +1,4 @@
 souptests
 =========
 
-Web Scraping with BeautifulSoup
+Web Scraping Craigslist Apartment Search with BeautifulSoup
